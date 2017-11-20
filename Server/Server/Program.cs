@@ -11,6 +11,7 @@ namespace Server
 {
     class Program
     {
+        public static int port = 0;
         static void Main(string[] args)
         {
             Console.Write("~");
@@ -18,8 +19,23 @@ namespace Server
             
             if (input == "start")
             {
-                Console.Write("what port would you like the server to be hosted on?: ");
-                int port = Convert.ToInt32(Console.ReadLine());
+                Console.Write("what port would you like the server to be hosted on?: ");                 
+                
+                try
+                {                    
+                    port = Convert.ToInt32(Console.ReadLine());
+
+                }
+                catch (OverflowException)
+                {
+                    Console.WriteLine("What in tarnation! that port is not valid! Try another port.");
+
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine("That isnt a number, mate. Try again");
+                }
+
 
                 Console.Write("Would you like a password?");
                 string passStr = Convert.ToString(Console.ReadLine());
