@@ -60,7 +60,7 @@ namespace Server
                     Console.Write("What is the IP of this machine? ");
                     string ipIn = Convert.ToString(Console.ReadLine());
                     IPAddress ipA = Dns.Resolve(ipIn).AddressList[0];
-                    Console.Write("Now listening on port " + port);
+                    Console.WriteLine("Now listening on port " + port);
                     TcpListener servSock = new TcpListener(ipA, port);
                     TcpClient clientsock = default(TcpClient);
                     int count = 0;
