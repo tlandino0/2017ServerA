@@ -1,4 +1,12 @@
 
 
-0.0.0.1
+0.0.2
+--Added actual server functionality
+
+Like the client version 0.0.16, this is incredibly unstable. 
+It's probably so unstable that you could breathe on it,
+and it would crash.
+Please use this with extreme caution. 
+
+0.0.1
 -Initial commit
