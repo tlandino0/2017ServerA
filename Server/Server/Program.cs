@@ -95,7 +95,16 @@ namespace Server
             {
                 TcpClient bcsock;
                 bcsock = (TcpClient)Item.Value;
-                NetworkStream transstream = bcsock.GetStream();
+                NetworkStream transstream = null;
+                try
+                {
+                    transstream = bcsock.GetStream();
+                }
+                catch
+                {
+                    bcsock.Close();
+                    
+                }
                 Byte[] transbytes = null;
 
                 if (flg == true)
@@ -135,16 +144,41 @@ namespace Server
             string ClientData = null;
             string response = null;
             string Count1 = null;
+            NetworkStream netstream = null; 
             
             while ((true))
             {
                 try
                 {
                     reqs++;
-                    NetworkStream netstream = clsock.GetStream();
-                    netstream.Read(bytes, 0, bytes.Length);
+                    try
+                    {
+                        netstream = clsock.GetStream();
+                    }
+                    catch
+                    {
+                        netstream.Close();
+                        netstream.Dispose();
+                    }
+                    try
+                    {
+                        netstream.Read(bytes, 0, bytes.Length);
+                    }
+                    catch
+                    {
+                        netstream.Close();
+                        netstream.Dispose();
+                    }
                     ClientData = Encoding.ASCII.GetString(bytes);
-                    ClientData = ClientData.Substring(0, ClientData.IndexOf("$"));
+                    try
+                    {
+                        ClientData = ClientData.Substring(0, ClientData.IndexOf("$"));
+                    }
+                    catch
+                    {
+                        netstream.Close();
+                    }
+                    //ClientData = ClientData.Substring(0, ClientData.IndexOf("$"));
                     Count1 = Convert.ToString(reqs);
 
                     Program.transmit(ClientData, clientN, true);
