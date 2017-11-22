@@ -144,7 +144,8 @@ namespace Server
             string ClientData = null;
             string response = null;
             string Count1 = null;
-            NetworkStream netstream = null; 
+            NetworkStream netstream = null;
+            string netDC = "";
             
             while ((true))
             {
@@ -162,7 +163,7 @@ namespace Server
                     }
                     try
                     {
-                        netstream.Read(bytes, 0, bytes.Length);
+                       netstream.Read(bytes, 0, bytes.Length);
                     }
                     catch
                     {
@@ -173,6 +174,15 @@ namespace Server
                     try
                     {
                         ClientData = ClientData.Substring(0, ClientData.IndexOf("$"));
+                        if (ClientData == "3DF38FC9")
+                        {
+                            CL.Remove(1);
+                            Program.transmit(ClientData, "has disconnected", true);
+                            netstream.Close();
+                            netstream.Dispose();
+                            
+                        }
+                       
                     }
                     catch
                     {
