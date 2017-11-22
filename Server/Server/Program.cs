@@ -176,11 +176,11 @@ namespace Server
                         ClientData = ClientData.Substring(0, ClientData.IndexOf("$"));
                         if (ClientData == "3DF38FC9")
                         {
-                            CL.Remove(1);
+                            CL.Remove(ClientData);
                             Program.transmit(ClientData, "has disconnected", true);
                             netstream.Close();
                             netstream.Dispose();
-                            
+                            break;
                         }
                        
                     }
