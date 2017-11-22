@@ -176,8 +176,16 @@ namespace Server
                         ClientData = ClientData.Substring(0, ClientData.IndexOf("$"));
                         if (ClientData == "3DF38FC9")
                         {
+
+                            try
+                            {
+                                Program.transmit(ClientData, "has disconnected", true);
+                            }
+                            catch
+                            {
+
+                            }
                             CL.Remove(ClientData);
-                            Program.transmit(ClientData, "has disconnected", true);
                             netstream.Close();
                             netstream.Dispose();
                             break;
@@ -190,8 +198,14 @@ namespace Server
                     }
                     //ClientData = ClientData.Substring(0, ClientData.IndexOf("$"));
                     Count1 = Convert.ToString(reqs);
-
-                    Program.transmit(ClientData, clientN, true);
+                    try
+                    {
+                        Program.transmit(ClientData, clientN, true);
+                    }
+                    catch
+                    {
+                        break;
+                    }
 
                 }
                 catch (Exception FF)
