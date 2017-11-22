@@ -4,6 +4,8 @@ using System.Text;
 using System.Collections;
 using System.Threading;
 using System.Net;
+using System.Collections.Specialized;
+using System.Collections.Generic;
 
 namespace Server
 {
@@ -11,6 +13,9 @@ namespace Server
     {
         public static Hashtable CL = new Hashtable();
         public static int port = 0;
+        public string clientData;
+        Random rand0;
+        
         static void Main(string[] args)
         {
             Console.Write("~");
@@ -72,27 +77,42 @@ namespace Server
 
                         byte[] bytesFrom = new byte[10025];
                         string clientData = null;
-
+                        Random rand0 = new Random();
                         NetworkStream netstr = clientsock.GetStream();
                         netstr.Read(bytesFrom, 0, bytesFrom.Length);
                         clientData = Encoding.ASCII.GetString(bytesFrom);
                         clientData = clientData.Substring(0, clientData.IndexOf("$"));
-                        
-                        CL.Add(clientData, clientsock);
+                        CL.Clear();
+                        try
+                        {
+                            CL.Add(clientData, clientsock);
+                        }
+                        catch
+                        {
+                            int temp0 = rand0.Next(0, 1111);
+                            string temp1 = Convert.ToString(temp0);
+                            clientData = clientData + temp1;
+                            CL.Add(clientData, clientsock);
+                        }
+                       
 
                         transmit(clientData + " Has Arrived \n", clientData, false);
                         ClientHandler client0 = new ClientHandler();
-                        Console.WriteLine(clientData + " Joined chat room ");
+                        Console.WriteLine(clientData + " Has Arrived ");
                         client0.ClientStart(clientsock, clientData, CL);
                     }
 
                 }
             }
         }
-       public static void transmit(string msg, string handle, bool flg)
+        public string temp1 = "";
+        public string temp2 = "";
+        public static void transmit(string msg, string handle, bool flg)
         {
+           
             foreach (DictionaryEntry Item in CL)
             {
+                
                 TcpClient bcsock;
                 bcsock = (TcpClient)Item.Value;
                 NetworkStream transstream = null;
@@ -115,24 +135,39 @@ namespace Server
                 {
                     transbytes = Encoding.ASCII.GetBytes(msg);
                 }
+                try
+                {
+                    transstream.Write(transbytes, 0, transbytes.Length);
+                    
+                    transstream.Flush();
+                    Console.WriteLine(msg);
+                }
+                catch
+                {
 
-                transstream.Write(transbytes, 0, transbytes.Length);
-                transstream.Flush();
+                    //CL.Clear();
+
+
+                }
+                
             }
-        }  
+        }
+        
     }
     public class ClientHandler
     {
         TcpClient clsock;
         string clientN;
         Hashtable CL;
+        Thread clientThread;
+
 
         public void ClientStart(TcpClient clsockin, string clientn0, Hashtable List0)
         {
             clsock = clsockin;
             clientN = clientn0;
             CL = List0;
-            Thread clientThread = new Thread(chatthings);
+            clientThread = new Thread(chatthings);
             clientThread.Start();
 
         }
@@ -179,16 +214,14 @@ namespace Server
 
                             try
                             {
-                                Program.transmit(ClientData, "has disconnected", true);
+                                Program.transmit(ClientData ,"a client has disconnected", true);
                             }
                             catch
                             {
-
+                                
                             }
-                            CL.Remove(ClientData);
-                            netstream.Close();
-                            netstream.Dispose();
-                            break;
+
+                            clientThread.Abort();
                         }
                        
                     }
@@ -215,6 +248,9 @@ namespace Server
                 }
             }
         }
+      
+
     }
+    
     
 }
