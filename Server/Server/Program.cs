@@ -18,15 +18,12 @@ namespace Server
         
         static void Main(string[] args)
         {
-            Console.Write("~");
-            string input = Convert.ToString(Console.ReadLine());
-            
-            if (input == "start")
-            {
-                Console.Write("what port would you like the server to be hosted on?: ");                 
+
+            Console.Write("what port would you like the server to be hosted on?: ");                 
                 
                 try
-                {                    
+                { 
+                    //port is converted to an Int32 value.
                     port = Convert.ToInt32(Console.ReadLine());
 
                 }
@@ -39,77 +36,68 @@ namespace Server
                 {
                     Console.WriteLine("That isnt a number, mate. Try again");
                 }
-                
+                    //binding to IP
+            Console.Write("What is the IP of this machine? ");
+            //IP converted to string
+            string ipIn = Convert.ToString(Console.ReadLine());
+            /*Resolving the IP address using the Dns subroutine.
+            The Dns.Resolve(int) function is obnoxiously deprecated, 
+            and in order to remove it, I would have to call yet another deprecated function.
 
-                Console.Write("Would you like a password?");
-                string passStr = Convert.ToString(Console.ReadLine());
-                passStr = passStr.ToLower();
-                if (passStr == "yes" || passStr == "y")
-                {
-                    Console.Write("Please enter the password you would like for your chatroom: ");
-                    string password = (Console.ReadLine());
-                    Console.Write("Confirm? [y/n]");
-                    string dec = Convert.ToString(Console.ReadLine());
-                    dec = dec.ToLower();
-                    if (dec == "y")
-                    {
-                        Console.Write("Confirmed. Now listening on " + port + " with password");
-                    }
-                    else
-                    {
-                       //not confirmed message
-                    }
-                }
-                else
-                {
-                    Console.Write("What is the IP of this machine? ");
-                    string ipIn = Convert.ToString(Console.ReadLine());
-                    IPAddress ipA = Dns.Resolve(ipIn).AddressList[0];
-                    Console.WriteLine("Now listening on port " + port);
-                    TcpListener servSock = new TcpListener(ipA, port);
-                    TcpClient clientsock = default(TcpClient);
-                    int count = 0;
-                    servSock.Start();
+            Hopefully I can actually figure out if this is needed for anything useful, and a
+            desired replacement.
+
+
+            --Tland
+            */
+            IPAddress ipA = Dns.Resolve(ipIn).AddressList[0];
+
+            Console.WriteLine("Now listening on port " + port);
+            //creates the TCP listener. 
+            TcpListener servSock = new TcpListener(ipA, port);
+            //creates the TCP client for sending the messaging.
+            TcpClient clientsock = default(TcpClient);
+            int count = 0;
+            //starting the server socket on another thread.
+            servSock.Start();
                     while ((true))
                     {
+                /* This is probably the area where most of the problems arise. 
+                *  I can't help but think that the while loop is the source of most
+                *  of the problems in the program.
+                * 
+                * 
+                */
                         count++;
+                //Accepting a client
                         clientsock = servSock.AcceptTcpClient();
 
                         byte[] bytesFrom = new byte[10025];
+                //clientdata null by default, may also be a wave of issues.
                         string clientData = null;
-                        Random rand0 = new Random();
-                        NetworkStream netstr = clientsock.GetStream();
+                      
+                NetworkStream netstr = clientsock.GetStream();
                         netstr.Read(bytesFrom, 0, bytesFrom.Length);
                         clientData = Encoding.ASCII.GetString(bytesFrom);
                         clientData = clientData.Substring(0, clientData.IndexOf("$"));
-                        CL.Clear();
                         try
                         {
                             CL.Add(clientData, clientsock);
                         }
                         catch
                         {
-                            int temp0 = rand0.Next(0, 1111);
-                            string temp1 = Convert.ToString(temp0);
-                            clientData = clientData + temp1;
-                            CL.Add(clientData, clientsock);
-                        }
-                       
 
+                        }
                         transmit(clientData + " Has Arrived \n", clientData, false);
                         ClientHandler client0 = new ClientHandler();
                         Console.WriteLine(clientData + " Has Arrived ");
                         client0.ClientStart(clientsock, clientData, CL);
                     }
-
-                }
-            }
         }
         public string temp1 = "";
         public string temp2 = "";
         public static void transmit(string msg, string handle, bool flg)
         {
-           
             foreach (DictionaryEntry Item in CL)
             {
                 
